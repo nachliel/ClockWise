@@ -3,7 +3,7 @@
 class Timer {
     
     constructor(name) {
-        this.name = name;
+        this.name = name || `default`;
         this.createTime = process.hrtime();
         this.intervalNumbers = 0;
         this.stopNumber = 0;
@@ -34,10 +34,15 @@ class Timer {
         this.stopNumber = 0;
         this.intervals = [];
         this.averageIntervals = 0;
+        this.intervalsMeasure = [];
     }
     
     interval() {
         this.intervals[this.intervalNumbers++] = process.hrtime();
+    }
+
+    getNumberofIntervals() {
+        return this.intervalNumbers;
     }
 
     measure() {
@@ -58,11 +63,11 @@ class Timer {
     calculateIntervals() {
         if (this.intervalNumbers === 0)
             return;
+        let intervalsMeasure = [];
         this.averageIntervals = 0;
-        const intervalsMeasure = [];
-        for(let i = 1; i < this.intervalNumbers; i++) {
-            this.intervalsMeasure[i] = this.calculate(this.intervals[i - 1], this.intervals[i]);
-            this.averageIntervals += (this.toNumeric(this.intervalsMeasure[i]) - this.averageIntervals)/i;
+        for(let i = 0; i < this.intervalNumbers - 1; i++) {
+            intervalsMeasure[i] = this.calculate(this.intervals[i],this.intervals[i + 1]);
+            this.averageIntervals += (this.toNumeric(intervalsMeasure[i]) - this.averageIntervals)/(i+1);
         }
         return intervalsMeasure;
     }
@@ -119,6 +124,10 @@ class ClockWise extends Timer {
         return (this.timers[name].elapsed());
     }
 
+    numberOfIntervalsTimer(name) {
+        return this.timers[name].getNumberofIntervals();
+    }
+
     measureTimer(name) {
         this.timers[name].measure();
     }
@@ -137,6 +146,22 @@ class ClockWise extends Timer {
 
     getTimerAverageIntervals(name) {
         return this.timers[name].getAverageIntervals().toPrecision(this.options.accuracy);
+    }
+
+    printTimers() {
+        console.log(`ClockWise Timer \'${this.name}\' Timers:`)
+        if (this.timers[i].stopNumber > 0)
+                console.log(`StopWatch\tx${this.stopNumber}\t: ${this.getAverage().toPrecision(this.options.accuracy)} sec`);
+        if (this.timers[i].intervalNumbers > 0) {
+            console.log(`Intervals\tx${this.intervalNumbers}\t: ${this.getAverageIntervals().toPrecision(this.options.accuracy)} sec`);
+        }
+        for (let i= 0; i< this.timers.length; i++) {
+            if (this.timers[i].stopNumber > 0)
+                console.log(`[${this.timers[i].name}]:\tStopWatch\tx${this.timers[i].stopNumber}\t: ${this.timers[i].getAverage().toPrecision(this.options.accuracy)} sec`);
+            if (this.timers[i].intervalNumbers > 0) {
+                console.log(`[${this.timers[i].name}]:\tIntervals\tx${this.timers[i].intervalNumbers}\t: ${this.timers[i].getAverageIntervals().toPrecision(this.options.accuracy)} sec`);
+            }
+        }
     }
 }
 
