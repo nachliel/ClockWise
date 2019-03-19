@@ -98,7 +98,8 @@ class Timer {
 class ClockWise extends Timer {
     constructor(name,options) {
         super(name);
-        this.timers = [];
+        //this.timers = [];
+        this.timers = new Map();
         if (options)
             this.options = options;
         else {
@@ -109,59 +110,99 @@ class ClockWise extends Timer {
     }
 
     addTimer(name) {
-        this.timers[name] = new Timer(name);
+        //this.timers[name] = new Timer(name);
+        this.timers.set(name, new Timer(name));
     }
 
     startTimer(name) {
-        this.timers[name].start();
-    }
+        const timer = this.timers.get(name);
+        if (!timer) {
+          throw new Error(`No timer with the name "${name}" exists.`);
+        }
+        timer.start();
+      }
 
     stopTimer(name) {
-        this.timers[name].stop();
+        const timer = this.timers.get(name);
+        if (!timer) {
+          throw new Error(`No timer with the name "${name}" exists.`);
+        }
+        timer.stop();
     }
     
     elapsedTimer(name) {
-        return (this.timers[name].elapsed());
+        const timer = this.timers.get(name);
+        if (!timer) {
+          throw new Error(`No timer with the name "${name}" exists.`);
+        }
+        return timer.elapsed();
     }
 
     numberOfIntervalsTimer(name) {
-        return this.timers[name].getNumberofIntervals();
+        const timer = this.timers.get(name);
+        if (!timer) {
+          throw new Error(`No timer with the name "${name}" exists.`);
+        }
+        return timer.getNumberofIntervals();
     }
 
     measureTimer(name) {
-        this.timers[name].measure();
+        const timer = this.timers.get(name);
+        if (!timer) {
+          throw new Error(`No timer with the name "${name}" exists.`);
+        }
+        return timer.measure();
     }
 
     intervalTimer(name) {
-        this.timers[name].interval();
+        this.timers.get(name).interval();
+        const timer = this.timers.get(name);
+        if (!timer) {
+          throw new Error(`No timer with the name "${name}" exists.`);
+        }
+        timer.interval();
     }
 
     measureIntervalsTimer(name) {
-        return this.timers[name].measureIntervalsTimer().toPrecision(this.options.accuracy);
+        const timer = this.timers.get(name);
+        if (!timer) {
+          throw new Error(`No timer with the name "${name}" exists.`);
+        }
+        return timer.measureIntervalsTimer().toPrecision(this.options.accuracy);
     }
 
     getTimerAverage(name) {
-        return this.timers[name].getAverage().toPrecision(this.options.accuracy);
+        const timer = this.timers.get(name);
+        if (!timer) {
+          throw new Error(`No timer with the name "${name}" exists.`);
+        }
+        return timer.getAverage().toPrecision(this.options.accuracy);
     }
 
     getTimerAverageIntervals(name) {
-        return this.timers[name].getAverageIntervals().toPrecision(this.options.accuracy);
+        const timer = this.timers.get(name);
+        if (!timer) {
+          throw new Error(`No timer with the name "${name}" exists.`);
+        }
+        return timer.getAverageIntervals().toPrecision(this.options.accuracy);
     }
 
     printTimers() {
         console.log(`ClockWise Timer \'${this.name}\' Timers:`)
-        if (this.timers[i].stopNumber > 0)
+        if (this.stopNumber > 0)
                 console.log(`StopWatch\tx${this.stopNumber}\t: ${this.getAverage().toPrecision(this.options.accuracy)} sec`);
-        if (this.timers[i].intervalNumbers > 0) {
+        if (this.intervalNumbers > 0) {
             console.log(`Intervals\tx${this.intervalNumbers}\t: ${this.getAverageIntervals().toPrecision(this.options.accuracy)} sec`);
         }
-        for (let i= 0; i< this.timers.length; i++) {
-            if (this.timers[i].stopNumber > 0)
-                console.log(`[${this.timers[i].name}]:\tStopWatch\tx${this.timers[i].stopNumber}\t: ${this.timers[i].getAverage().toPrecision(this.options.accuracy)} sec`);
-            if (this.timers[i].intervalNumbers > 0) {
-                console.log(`[${this.timers[i].name}]:\tIntervals\tx${this.timers[i].intervalNumbers}\t: ${this.timers[i].getAverageIntervals().toPrecision(this.options.accuracy)} sec`);
+        for (let [timerName, timer] of this.timers) {
+            console.log(key + ' = ' + value);
+            if (timer.stopNumber > 0)
+                console.log(`[${timerName}]:\tStopWatch\tx${timer.stopNumber}\t: ${timer.getAverage().toPrecision(this.options.accuracy)} sec`);
+            if (timer.intervalNumbers > 0) {
+                console.log(`[${timerName}]:\tIntervals\tx${timer.intervalNumbers}\t: ${timer.getAverageIntervals().toPrecision(this.options.accuracy)} sec`);
             }
         }
+        console.log('Timer Report End.');
     }
 }
 
