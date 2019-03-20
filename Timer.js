@@ -2,7 +2,7 @@
 /**
  * ClockWise Timer v1.0 By Nachlieli Shiloh Hills.
  * Zom Tishaa beav - Purim 20.3.19
- * Usage: cont timer = new ClockWise('Name');
+ * Usage: const timer = new ClockWise('Name');
  * This module uses two Modules Timer, and Clockwise an extension of Timer,
  * and Timers Managment. addTimer(),
  */
