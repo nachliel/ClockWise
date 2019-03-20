@@ -1,7 +1,13 @@
 'use strict'
+/**
+ * ClockWise Timer v1.0 By Nachlieli Shiloh Hills.
+ * Zom Tishaa beav - Purim 20.3.19
+ * Usage: cont timer = new ClockWise('Name');
+ * This module uses two Modules Timer, and Clockwise an extension of Timer,
+ * and Timers Managment. addTimer(),
+ */
 
 class Timer {
-    
     constructor(name) {
         this.name = name || `default`;
         this.createTime = process.hrtime();
@@ -46,15 +52,16 @@ class Timer {
     }
 
     measure() {
+        if (this.stopTime === 0) {
+            throw new Error(`Timer "${name}" still running.`);
+        }
         return this.calculate(this.startTime,this.stopTime);
-    }
-    measureNumeric() {
-        return this.numericCalc(this.startTime,this.stopTime);
     }
 
     getAverage() {
         return this.average;
     }
+
     getAverageIntervals() {
         this.calculateIntervals();
         return this.averageIntervals;
@@ -98,7 +105,6 @@ class Timer {
 class ClockWise extends Timer {
     constructor(name,options) {
         super(name);
-        //this.timers = [];
         this.timers = new Map();
         if (options)
             this.options = options;
@@ -110,7 +116,6 @@ class ClockWise extends Timer {
     }
 
     addTimer(name) {
-        //this.timers[name] = new Timer(name);
         this.timers.set(name, new Timer(name));
     }
 
@@ -155,7 +160,6 @@ class ClockWise extends Timer {
     }
 
     intervalTimer(name) {
-        this.timers.get(name).interval();
         const timer = this.timers.get(name);
         if (!timer) {
           throw new Error(`No timer with the name "${name}" exists.`);
@@ -186,23 +190,52 @@ class ClockWise extends Timer {
         }
         return timer.getAverageIntervals().toPrecision(this.options.accuracy);
     }
-
+    // Add Show time in chain..
     printTimers() {
         console.log(`ClockWise Timer \'${this.name}\' Timers:`)
         if (this.stopNumber > 0)
-                console.log(`StopWatch\tx${this.stopNumber}\t: ${this.getAverage().toPrecision(this.options.accuracy)} sec`);
+                console.log(`\t\tStopWatch\tx${this.stopNumber}\t: ${this.pretty(this.getAverage())} sec`);
         if (this.intervalNumbers > 0) {
-            console.log(`Intervals\tx${this.intervalNumbers}\t: ${this.getAverageIntervals().toPrecision(this.options.accuracy)} sec`);
+            console.log(`\t\tIntervals\tx${this.intervalNumbers}\t: ${this.pretty(this.getAverageIntervals())} sec`);
         }
+        console.log('-Timers:');
         for (let [timerName, timer] of this.timers) {
-            console.log(key + ' = ' + value);
-            if (timer.stopNumber > 0)
-                console.log(`[${timerName}]:\tStopWatch\tx${timer.stopNumber}\t: ${timer.getAverage().toPrecision(this.options.accuracy)} sec`);
+            console.log(`[${timerName}]:`);
+            if (timer.stopNumber > 0) {
+                console.log(`\t\tStopWatch\tx${timer.stopNumber}\t: ${this.pretty(timer.getAverage())} sec`);
+            }      
             if (timer.intervalNumbers > 0) {
-                console.log(`[${timerName}]:\tIntervals\tx${timer.intervalNumbers}\t: ${timer.getAverageIntervals().toPrecision(this.options.accuracy)} sec`);
+                console.log(`\t\tIntervals\tx${timer.intervalNumbers}\t: ${this.pretty(timer.getAverageIntervals())} sec`);
             }
         }
         console.log('Timer Report End.');
+    }
+
+    pretty(time) {
+        
+
+        let seconds = 0;
+        if (time[0] && time[1]) {
+            seconds = this.toNumeric(time); 
+        }
+        else {
+            seconds = time;
+        }
+        if (time < 0) {
+            return (time/1000000).toPrecision(this.options.accuracy) + ' ms';
+        }
+        
+        let minuets = math.floor(seconds/60);
+        let hours = math.floor(minuets/60);
+        minuets = minuets - (hours * 60);
+        seconds = seconds - minuets*60 - hours*3600;
+        let output = '';
+        if (hours > 0)
+            output += hours + ':';
+        if (minuets > 0 || hours > 0)
+            output += minuets + ':';  
+
+        return output + (seconds).toPrecision(this.options.accuracy);
     }
 }
 
