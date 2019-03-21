@@ -227,8 +227,8 @@ class ClockWise extends Timer {
             return (time/1000000).toPrecision(this.options.accuracy) + ' ms';
         }
         
-        let minuets = math.floor(seconds/60);
-        let hours = math.floor(minuets/60);
+        let minuets = Math.floor(seconds/60);
+        let hours = Math.floor(minuets/60);
         minuets = minuets - (hours * 60);
         seconds = seconds - minuets*60 - hours*3600;
         let output = '';
