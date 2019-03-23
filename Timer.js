@@ -122,7 +122,11 @@ class ClockWise extends Timer {
     startTimer(name) {
         const timer = this.timers.get(name);
         if (!timer) {
-          throw new Error(`No timer with the name "${name}" exists.`);
+          //throw new Error(`No timer with the name "${name}" exists.`);
+          this.addTimer(name);
+          const newTimer = this.timers.get(name);
+          newTimer.start();
+          return;
         }
         timer.start();
       }
@@ -162,7 +166,11 @@ class ClockWise extends Timer {
     intervalTimer(name) {
         const timer = this.timers.get(name);
         if (!timer) {
-          throw new Error(`No timer with the name "${name}" exists.`);
+          //throw new Error(`No timer with the name "${name}" exists.`);
+          this.addTimer(name);
+          const newTimer = this.timers.get(name);
+          newTimer.interval();
+          return;
         }
         timer.interval();
     }
@@ -194,18 +202,18 @@ class ClockWise extends Timer {
     printTimers() {
         console.log(`ClockWise Timer \'${this.name}\' Timers:`)
         if (this.stopNumber > 0)
-                console.log(`\t\tStopWatch\tx${this.stopNumber}\t: ${this.pretty(this.getAverage())} sec`);
+                console.log(`\t\tStopWatch\tx${this.stopNumber}\t- ${this.pretty(this.getAverage())}`);
         if (this.intervalNumbers > 0) {
-            console.log(`\t\tIntervals\tx${this.intervalNumbers}\t: ${this.pretty(this.getAverageIntervals())} sec`);
+            console.log(`\t\tIntervals\tx${this.intervalNumbers}\t- ${this.pretty(this.getAverageIntervals())}`);
         }
         console.log('-Timers:');
         for (let [timerName, timer] of this.timers) {
             console.log(`[${timerName}]:`);
             if (timer.stopNumber > 0) {
-                console.log(`\t\tStopWatch\tx${timer.stopNumber}\t: ${this.pretty(timer.getAverage())} sec`);
+                console.log(`\t\tStopWatch\tx${timer.stopNumber}\t- ${this.pretty(timer.getAverage())}`);
             }      
             if (timer.intervalNumbers > 0) {
-                console.log(`\t\tIntervals\tx${timer.intervalNumbers}\t: ${this.pretty(timer.getAverageIntervals())} sec`);
+                console.log(`\t\tIntervals\tx${timer.intervalNumbers}\t- ${this.pretty(timer.getAverageIntervals())}`);
             }
         }
         console.log('Timer Report End.');
@@ -223,21 +231,21 @@ class ClockWise extends Timer {
         else {
             seconds = time;
         }
-        if (time < 0) {
-            return (time/1000000).toPrecision(this.options.accuracy) + ' ms';
+        if (seconds < 1) {
+            return (seconds * 1000).toPrecision(this.options.accuracy) + ' ms';
         }
         
         let minuets = Math.floor(seconds/60);
         let hours = Math.floor(minuets/60);
         minuets = minuets - (hours * 60);
-        seconds = seconds - minuets*60 - hours*3600;
+        seconds = seconds - minuets * 60 - hours * 3600;
         let output = '';
         if (hours > 0)
             output += hours + ':';
         if (minuets > 0 || hours > 0)
             output += minuets + ':';  
 
-        return output + (seconds).toPrecision(this.options.accuracy);
+        return output + (seconds).toPrecision(this.options.accuracy) + '"';
     }
 }
 
